@@ -6,7 +6,12 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -20,8 +25,10 @@ public class MainActivity extends AppCompatActivity implements DateTimePicker.On
     @BindView(R.id.tv_end_date_time)
     TextView mTvEndDateTime;
 
+    private TimeZone timeZone;
     private Calendar startDate;
     private Calendar endDate;
+    private SimpleDateFormat simpleDateFormat;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,8 +36,11 @@ public class MainActivity extends AppCompatActivity implements DateTimePicker.On
 
         ButterKnife.bind(this);
 
-        startDate = Calendar.getInstance();
-        endDate = Calendar.getInstance();
+        timeZone = TimeZone.getTimeZone("UTC");
+        startDate = Calendar.getInstance(timeZone);
+        endDate = Calendar.getInstance(timeZone);
+        simpleDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz", Locale.US);
+        simpleDateFormat.setTimeZone(timeZone);
     }
 
     @SuppressWarnings("unused")
@@ -59,14 +69,24 @@ public class MainActivity extends AppCompatActivity implements DateTimePicker.On
     public void onDateTimeSet(Calendar calendar, DateTimePicker.Type type) {
         if (type.equals(DateTimePicker.Type.START_DATE_TIME)) {
             startDate = calendar;
-            mTvStartDateTime.setText(startDate.getTime().toString());
+            mTvStartDateTime.setText(simpleDateFormat.format(startDate.getTime()) + " " + timeZone(startDate.getTime()));
         } else if (type.equals(DateTimePicker.Type.END_DATE_TIME)) {
             endDate = calendar;
-            mTvEndDateTime.setText(endDate.getTime().toString());
+            mTvEndDateTime.setText(simpleDateFormat.format(endDate.getTime()) + " " + timeZone(endDate.getTime()));
         }
     }
 
     private boolean isValidDate(Calendar startDate, Calendar endDate) {
         return endDate.getTime().after(startDate.getTime());
+    }
+
+    private String timeZone(Date date) {
+        long millis = timeZone.getRawOffset() + (timeZone.inDaylightTime(date) ? timeZone.getDSTSavings() : 0);
+
+        return String.format("%s%s:%s",
+                millis < 0 ? "-" : "+",
+                String.format("%02d", Math.abs(TimeUnit.MILLISECONDS.toHours(millis))),
+                String.format("%02d", Math.abs(TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis))))
+        );
     }
 }

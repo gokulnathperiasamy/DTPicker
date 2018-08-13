@@ -36,7 +36,6 @@ public abstract class DateTimePicker {
         DatePickerDialog datePickerDialog = new DatePickerDialog(mContext, dateSetListener, date.get(Calendar.YEAR), date.get(Calendar.MONTH), date.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.getDatePicker().setMinDate(date.getTimeInMillis() - 1000);
         datePickerDialog.show();
-        datePickerDialog.show();
     }
 
     private static void showTimePickerDialog(Calendar date) {
@@ -47,7 +46,6 @@ public abstract class DateTimePicker {
     private static DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            mSelectedDate = Calendar.getInstance();
             mSelectedDate.set(Calendar.YEAR, year);
             mSelectedDate.set(Calendar.MONTH, monthOfYear);
             mSelectedDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
