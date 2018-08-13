@@ -36,23 +36,34 @@ public class MainActivity extends AppCompatActivity implements DateTimePicker.On
 
         ButterKnife.bind(this);
 
+        initValues();
+        resetValues();
+    }
+
+    private void initValues() {
         timeZone = TimeZone.getTimeZone("UTC");
-        startDate = Calendar.getInstance(timeZone);
-        endDate = Calendar.getInstance(timeZone);
         simpleDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz", Locale.US);
         simpleDateFormat.setTimeZone(timeZone);
+    }
+
+    private void resetValues() {
+        startDate = Calendar.getInstance(timeZone);
+        endDate = Calendar.getInstance(timeZone);
+        mTvStartDateTime.setText("");
+        mTvEndDateTime.setText("");
     }
 
     @SuppressWarnings("unused")
     @OnClick(R.id.b_start_date_time)
     public void ctaSelectStartDateTime(View view) {
+        resetValues();
         DateTimePicker.getDateTime(this, this, startDate, DateTimePicker.Type.START_DATE_TIME);
     }
 
     @SuppressWarnings("unused")
     @OnClick(R.id.b_end_date_time)
     public void ctaSelectEndDateTime(View view) {
-        DateTimePicker.getDateTime(this, this, startDate, DateTimePicker.Type.END_DATE_TIME);
+        DateTimePicker.getDateTime(this, this, endDate, DateTimePicker.Type.END_DATE_TIME);
     }
 
     @SuppressWarnings("unused")
@@ -83,8 +94,7 @@ public class MainActivity extends AppCompatActivity implements DateTimePicker.On
     private String timeZone(Date date) {
         long millis = timeZone.getRawOffset() + (timeZone.inDaylightTime(date) ? timeZone.getDSTSavings() : 0);
 
-        return String.format("%s%s:%s",
-                millis < 0 ? "-" : "+",
+        return String.format("%s%s:%s", millis < 0 ? "-" : "+",
                 String.format("%02d", Math.abs(TimeUnit.MILLISECONDS.toHours(millis))),
                 String.format("%02d", Math.abs(TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis))))
         );
