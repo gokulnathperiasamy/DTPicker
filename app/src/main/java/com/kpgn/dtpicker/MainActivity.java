@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnItemSelected;
 
 public class MainActivity extends AppCompatActivity implements DateTimePicker.OnDateTimeSetListener {
 
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements DateTimePicker.On
     private Calendar endDate;
     private SimpleDateFormat simpleDateFormat;
     private DateTimePicker dateTimePicker;
+    private String[] timeZoneIDs;
 
     // Final Result of user selection
     private Date selectedStartDate;
@@ -65,30 +67,6 @@ public class MainActivity extends AppCompatActivity implements DateTimePicker.On
         mTvEndDateTime.setText("");
     }
 
-    private void setTimeZones() {
-        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        String[] ids = TimeZone.getAvailableIDs();
-        for (String id : ids) {
-            adapter.add(displayTimeZone(TimeZone.getTimeZone(id)));
-        }
-        mTimeZone.setAdapter(adapter);
-    }
-
-    private static String displayTimeZone(TimeZone tz) {
-        long hours = TimeUnit.MILLISECONDS.toHours(tz.getRawOffset());
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(tz.getRawOffset()) - TimeUnit.HOURS.toMinutes(hours);
-        minutes = Math.abs(minutes);
-        String result = "";
-        if (hours > 0) {
-            result = String.format("%s (GMT+%d:%02d)", tz.getID(), hours, minutes);
-        } else {
-            result = String.format("%s (GMT%d:%02d)", tz.getID(), hours, minutes);
-        }
-        return result;
-    }
-
     @SuppressWarnings("unused")
     @OnClick(R.id.b_start_date_time)
     public void ctaSelectStartDateTime(View view) {
@@ -110,6 +88,12 @@ public class MainActivity extends AppCompatActivity implements DateTimePicker.On
         } else {
             Toast.makeText(getApplicationContext(), "Invalid Date Range Selection!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @SuppressWarnings("unused")
+    @OnItemSelected(R.id.s_time_zone)
+    public void spinnerItemSelected(Spinner spinner, int position) {
+        timeZone = TimeZone.getTimeZone(timeZoneIDs[position]);
     }
 
     @Override
@@ -137,5 +121,35 @@ public class MainActivity extends AppCompatActivity implements DateTimePicker.On
                 String.format("%02d", Math.abs(TimeUnit.MILLISECONDS.toHours(millis))),
                 String.format("%02d", Math.abs(TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis))))
         );
+    }
+
+    private void setTimeZones() {
+        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        timeZoneIDs = TimeZone.getAvailableIDs();
+        for (String id : timeZoneIDs) {
+            adapter.add(displayTimeZone(TimeZone.getTimeZone(id)));
+        }
+        mTimeZone.setAdapter(adapter);
+        for (int i = 0; i < timeZoneIDs.length; i++) {
+            if (timeZoneIDs[i].equals("UTC")) {
+                mTimeZone.setSelection(i);
+                break;
+            }
+        }
+    }
+
+    private static String displayTimeZone(TimeZone tz) {
+        long hours = TimeUnit.MILLISECONDS.toHours(tz.getRawOffset());
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(tz.getRawOffset()) - TimeUnit.HOURS.toMinutes(hours);
+        minutes = Math.abs(minutes);
+        String result = "";
+        if (hours > 0) {
+            result = String.format("%s (GMT+%d:%02d)", tz.getID(), hours, minutes);
+        } else {
+            result = String.format("%s (GMT%d:%02d)", tz.getID(), hours, minutes);
+        }
+        return result;
     }
 }
