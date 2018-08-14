@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements DateTimePicker.On
     private Calendar startDate;
     private Calendar endDate;
     private SimpleDateFormat simpleDateFormat;
+    private DateTimePicker dateTimePicker;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements DateTimePicker.On
         timeZone = TimeZone.getTimeZone("UTC");
         simpleDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz", Locale.US);
         simpleDateFormat.setTimeZone(timeZone);
+        dateTimePicker = new DateTimePicker();
     }
 
     private void resetValues() {
@@ -57,13 +59,13 @@ public class MainActivity extends AppCompatActivity implements DateTimePicker.On
     @OnClick(R.id.b_start_date_time)
     public void ctaSelectStartDateTime(View view) {
         resetValues();
-        DateTimePicker.getDateTime(this, this, startDate, DateTimePicker.Type.START_DATE_TIME);
+        dateTimePicker.getDateTime(this, this, startDate, DateTimePicker.Type.START_DATE_TIME);
     }
 
     @SuppressWarnings("unused")
     @OnClick(R.id.b_end_date_time)
     public void ctaSelectEndDateTime(View view) {
-        DateTimePicker.getDateTime(this, this, endDate, DateTimePicker.Type.END_DATE_TIME);
+        dateTimePicker.getDateTime(this, this, endDate, DateTimePicker.Type.END_DATE_TIME);
     }
 
     @SuppressWarnings("unused")
