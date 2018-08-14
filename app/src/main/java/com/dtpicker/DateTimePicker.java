@@ -1,4 +1,4 @@
-package com.kpgn.dtpicker;
+package com.dtpicker;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
