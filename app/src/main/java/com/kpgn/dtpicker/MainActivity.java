@@ -3,6 +3,8 @@ package com.kpgn.dtpicker;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +20,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity implements DateTimePicker.OnDateTimeSetListener {
+
+    @BindView(R.id.s_time_zone)
+    Spinner mTimeZone;
 
     @BindView(R.id.tv_start_date_time)
     TextView mTvStartDateTime;
@@ -50,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements DateTimePicker.On
         simpleDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz", Locale.US);
         simpleDateFormat.setTimeZone(timeZone);
         dateTimePicker = new DateTimePicker();
+        setTimeZones();
     }
 
     private void resetValues() {
@@ -57,6 +63,30 @@ public class MainActivity extends AppCompatActivity implements DateTimePicker.On
         endDate = Calendar.getInstance(timeZone);
         mTvStartDateTime.setText("");
         mTvEndDateTime.setText("");
+    }
+
+    private void setTimeZones() {
+        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        String[] ids = TimeZone.getAvailableIDs();
+        for (String id : ids) {
+            adapter.add(displayTimeZone(TimeZone.getTimeZone(id)));
+        }
+        mTimeZone.setAdapter(adapter);
+    }
+
+    private static String displayTimeZone(TimeZone tz) {
+        long hours = TimeUnit.MILLISECONDS.toHours(tz.getRawOffset());
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(tz.getRawOffset()) - TimeUnit.HOURS.toMinutes(hours);
+        minutes = Math.abs(minutes);
+        String result = "";
+        if (hours > 0) {
+            result = String.format("%s (GMT+%d:%02d)", tz.getID(), hours, minutes);
+        } else {
+            result = String.format("%s (GMT%d:%02d)", tz.getID(), hours, minutes);
+        }
+        return result;
     }
 
     @SuppressWarnings("unused")
