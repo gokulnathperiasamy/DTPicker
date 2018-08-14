@@ -8,6 +8,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -23,7 +25,7 @@ import butterknife.OnItemSelected;
 public class MainActivity extends AppCompatActivity implements DateTimePicker.OnDateTimeSetListener {
 
     @BindView(R.id.s_time_zone)
-    Spinner mTimeZone;
+    SearchableSpinner mTimeZone;
 
     @BindView(R.id.tv_start_date_time)
     TextView mTvStartDateTime;
@@ -138,6 +140,8 @@ public class MainActivity extends AppCompatActivity implements DateTimePicker.On
                 break;
             }
         }
+        mTimeZone.setTitle("Select Time Zone");
+        mTimeZone.setPositiveButton("DONE");
     }
 
     private static String displayTimeZone(TimeZone tz) {
