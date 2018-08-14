@@ -31,6 +31,10 @@ public class MainActivity extends AppCompatActivity implements DateTimePicker.On
     private SimpleDateFormat simpleDateFormat;
     private DateTimePicker dateTimePicker;
 
+    // Final Result of user selection
+    private Date selectedStartDate;
+    private Date selectedEndDate;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -71,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements DateTimePicker.On
     @SuppressWarnings("unused")
     @OnClick(R.id.b_validate_dates)
     public void ctaValidateDates(View view) {
-        if (isValidDate(startDate, endDate)) {
+        if (isValidDate(selectedStartDate, selectedEndDate)) {
             Toast.makeText(getApplicationContext(), "Valid Date Range!", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(getApplicationContext(), "Invalid Date Range Selection!", Toast.LENGTH_SHORT).show();
@@ -82,15 +86,18 @@ public class MainActivity extends AppCompatActivity implements DateTimePicker.On
     public void onDateTimeSet(Calendar calendar, DateTimePicker.Type type) {
         if (type.equals(DateTimePicker.Type.START_DATE_TIME)) {
             startDate = calendar;
-            mTvStartDateTime.setText(simpleDateFormat.format(startDate.getTime()) + " " + timeZone(startDate.getTime()));
+            endDate = calendar;
+            selectedStartDate = startDate.getTime();
+            mTvStartDateTime.setText(simpleDateFormat.format(selectedStartDate) + " " + timeZone(selectedStartDate));
         } else if (type.equals(DateTimePicker.Type.END_DATE_TIME)) {
             endDate = calendar;
-            mTvEndDateTime.setText(simpleDateFormat.format(endDate.getTime()) + " " + timeZone(endDate.getTime()));
+            selectedEndDate = endDate.getTime();
+            mTvEndDateTime.setText(simpleDateFormat.format(selectedEndDate) + " " + timeZone(selectedEndDate));
         }
     }
 
-    private boolean isValidDate(Calendar startDate, Calendar endDate) {
-        return endDate.getTime().after(startDate.getTime());
+    private boolean isValidDate(Date selectedStartDate, Date selectedEndDate) {
+        return selectedStartDate != null && selectedEndDate != null && selectedEndDate.after(selectedStartDate);
     }
 
     private String timeZone(Date date) {
